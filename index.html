@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteLisa — Визуализации АР</title>
     <style>
+        /* Интерьерная благородная палитра (Dark Espresso, Chocolate & Burgundy) */
         body {
             margin: 0;
             padding: 0;
-            background-color: #1a1110;
-            color: #f4efe9;
-            font-family: 'Times New Roman', Times, serif;
+            background-color: #1a1110; /* Эстетичный кофейно-шоколадный фон */
+            color: #f4efe9; /* Текст молочно-белого оттенка */
+            font-family: 'Times New Roman', Times, serif; /* Тонкая классическая гарнитура */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,6 +20,7 @@
             overflow: hidden;
         }
 
+        /* Текстурный оверлей — деликатный эффект матового холста или бумаги */
         body::before {
             content: "";
             position: fixed;
@@ -29,6 +31,7 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
+        /* Шапка проекта */
         header {
             text-align: center;
             margin-bottom: 20px;
@@ -46,15 +49,16 @@
         header p {
             font-size: 14px;
             letter-spacing: 0.05em;
-            color: #bfa89e;
+            color: #bfa89e; /* Приглушенный карамельный тон */
             margin: 0;
         }
 
+        /* Рамка чертежа/галереи */
         .slider-container {
             position: relative;
             width: 80vw;
             max-width: 1000px;
-            height: 56.25vw;
+            height: 56.25vw; /* Пропорция 16:9 */
             max-height: 562px;
             background-color: #261c1b;
             border: 1px solid #3d2d2b;
@@ -66,9 +70,8 @@
             display: flex;
             width: 100%;
             height: 100%;
-            /* Оптимизация анимации на уровне видеокарты */
-            will-change: transform;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform; /* Аппаратное ускорение на видеокарте */
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Плавный переход */
         }
 
         .slide {
@@ -81,7 +84,7 @@
             background: #261c1b;
         }
 
-        /* Тег img вместо background-image загружается и рендерится быстрее */
+        /* Оптимальный рендеринг картинок */
         .slide img {
             width: 100%;
             height: 100%;
@@ -89,6 +92,7 @@
             display: block;
         }
 
+        /* Тонкие стильные кнопки навигации */
         .nav-btn {
             position: absolute;
             top: 50%;
@@ -115,6 +119,7 @@
         .prev-btn { left: -70px; }
         .next-btn { right: -70px; }
 
+        /* Оформление счетчика как в штампе АР */
         .counter {
             margin-top: 20px;
             font-size: 16px;
@@ -122,6 +127,7 @@
             color: #bfa89e;
         }
 
+        /* Адаптив для смартфонов и планшетов */
         @media (max-width: 1200px) {
             .prev-btn { left: 10px; }
             .next-btn { right: 10px; }
@@ -141,19 +147,18 @@
         
         <div class="slider-container">
             <div class="slider-wrapper" id="sliderWrapper">
-                <!-- Первый слайд загружается сразу (eager), остальные — лениво по ходу просмотра -->
-                <!-- Если поменяете формат на .webp, замените расширения в коде ниже -->
-                <div class="slide"><img src="04.png" alt="04" loading="eager"></div>
-                <div class="slide"><img src="05.png" alt="05" loading="lazy"></div>
-                <div class="slide"><img src="06.png" alt="06" loading="lazy"></div>
-                <div class="slide"><img src="07.png" alt="07" loading="lazy"></div>
-                <div class="slide"><img src="08.png" alt="08" loading="lazy"></div>
-                <div class="slide"><img src="09.png" alt="09" loading="lazy"></div>
-                <div class="slide"><img src="10.png" alt="10" loading="lazy"></div>
-                <div class="slide"><img src="11.png" alt="11" loading="lazy"></div>
-                <div class="slide"><img src="12.png" alt="12" loading="lazy"></div>
-                <div class="slide"><img src="13.png" alt="13" loading="lazy"></div>
-                <div class="slide"><img src="14.png" alt="14" loading="lazy"></div>
+                <!-- Все слайды переведены на WebP. Первый загружается сразу, остальные — лениво -->
+                <div class="slide"><img src="04.webp" alt="Визуализация 04" loading="eager"></div>
+                <div class="slide"><img src="05.webp" alt="Визуализация 05" loading="lazy"></div>
+                <div class="slide"><img src="06.webp" alt="Визуализация 06" loading="lazy"></div>
+                <div class="slide"><img src="07.webp" alt="Визуализация 07" loading="lazy"></div>
+                <div class="slide"><img src="08.webp" alt="Визуализация 08" loading="lazy"></div>
+                <div class="slide"><img src="09.webp" alt="Визуализация 09" loading="lazy"></div>
+                <div class="slide"><img src="10.webp" alt="Визуализация 10" loading="lazy"></div>
+                <div class="slide"><img src="11.webp" alt="Визуализация 11" loading="lazy"></div>
+                <div class="slide"><img src="12.webp" alt="Визуализация 12" loading="lazy"></div>
+                <div class="slide"><img src="13.webp" alt="Визуализация 13" loading="lazy"></div>
+                <div class="slide"><img src="14.webp" alt="Визуализация 14" loading="lazy"></div>
             </div>
         </div>
 
@@ -172,18 +177,18 @@
         let currentIndex = 0;
         const totalSlides = images.length;
 
-        // Массив путей для упреждающей фоновой загрузки (Preload)
+        // Сохраняем оригинальные пути к WebP файлам для кэширования
         const imageSources = Array.from(images).map(img => img.src);
 
         function preloadNextImages(index) {
-            // Подгружаем следующий и пред-следующий слайды заранее в фоновом режиме
+            // Незаметно подгружаем в кэш браузера следующий и последующий слайды
             const nextIdx = (index + 1) % totalSlides;
             const afterNextIdx = (index + 2) % totalSlides;
             
             [nextIdx, afterNextIdx].forEach(idx => {
                 if (images[idx].getAttribute('loading') === 'lazy') {
                     images[idx].src = imageSources[idx];
-                    images[idx].removeAttribute('loading');
+                    images[idx].removeAttribute('loading'); // Убираем ленивый атрибут, так как файл уже качается
                 }
             });
         }
@@ -204,12 +209,13 @@
             updateSlider();
         });
 
+        // Навигация с клавиатуры стрелками «Влево / Вправо»
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') nextBtn.click();
             if (e.key === 'ArrowLeft') prevBtn.click();
         });
 
-        // Запуск фонового кэша для первых шагов сразу после загрузки страницы
+        // Как только документ готов, сразу кэшируем первые скрытые слайды
         window.addEventListener('DOMContentLoaded', () => {
             preloadNextImages(0);
         });
