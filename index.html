@@ -5,86 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteLisa — Визуализации АР</title>
     <style>
-        /* Интерьерная благородная палитра (Dark Espresso, Chocolate & Burgundy) */
+        /* Роскошная палитра Deep Bordeaux, Burgundy & Warm Silk */
         body {
             margin: 0;
             padding: 0;
-            background-color: #1a1110; /* Эстетичный кофейно-шоколадный фон */
-            color: #f4efe9; /* Текст молочно-белого оттенка */
-            font-family: 'Times New Roman', Times, serif; /* Тонкая классическая гарнитура */
+            background: radial-gradient(circle at center, #2d1413 0%, #1a0808 100%);
+            color: #fcfaf7;
+            font-family: 'Times New Roman', Times, serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             min-height: 100vh;
-            overflow: hidden;
+            box-sizing: border-box;
+            padding: 4vh 2vw;
+            overflow-x: hidden;
         }
 
-        /* Текстурный оверлей — деликатный эффект матового холста или бумаги */
+        /* Текстурный оверлей — эффект дорогой хлопковой бумаги */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            opacity: 0.04;
+            opacity: 0.05;
             pointer-events: none;
             z-index: 9999;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* Шапка проекта */
+        /* Шапка проекта с крупным шрифтом */
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 2vh;
             z-index: 10;
         }
 
         header h1 {
-            font-size: 24px;
+            font-size: clamp(32px, 5vw, 56px);
             font-weight: 300;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
-            margin: 0 0 5px 0;
+            margin: 0 0 10px 0;
+            color: #fcfaf7;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
         header p {
-            font-size: 14px;
-            letter-spacing: 0.05em;
-            color: #bfa89e; /* Приглушенный карамельный тон */
+            font-size: clamp(12px, 1.5vw, 16px);
+            letter-spacing: 0.1em;
+            color: #d4b2a7;
             margin: 0;
+            text-transform: uppercase;
         }
 
-        /* Рамка чертежа/галереи */
-        .slider-container {
+        /* Основная трехмерная сцена для перелистывания */
+        .scene {
             position: relative;
-            width: 80vw;
-            max-width: 1000px;
-            height: 56.25vw; /* Пропорция 16:9 */
-            max-height: 562px;
-            background-color: #261c1b;
-            border: 1px solid #3d2d2b;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            overflow: hidden;
+            width: 85vw;
+            max-width: 1100px;
+            height: 56.25vw;
+            max-height: 618px;
+            perspective: 2000px;
+            margin: auto 0;
         }
 
-        .slider-wrapper {
-            display: flex;
+        .book {
             width: 100%;
             height: 100%;
-            will-change: transform; /* Аппаратное ускорение на видеокарте */
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Плавный переход */
+            position: relative;
+            transform-style: preserve-3d;
         }
 
+        /* Слайд как отдельная страница */
         .slide {
-            min-width: 100%;
+            position: absolute;
+            width: 100%;
             height: 100%;
-            position: relative;
+            top: 0; left: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #261c1b;
+            background-color: #231212;
+            border-radius: clamp(4px, 1.2vw, 16px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform-origin: left center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+            will-change: transform, opacity;
         }
 
-        /* Оптимальный рендеринг картинок */
         .slide img {
             width: 100%;
             height: 100%;
@@ -92,46 +103,109 @@
             display: block;
         }
 
-        /* Тонкие стильные кнопки навигации */
+        /* Классы состояний для 3D анимации */
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: rotateY(0deg);
+            z-index: 2;
+        }
+
+        .slide.passed {
+            opacity: 0;
+            pointer-events: none;
+            transform: rotateY(-180deg);
+            z-index: 1;
+        }
+
+        .slide.upcoming {
+            opacity: 0;
+            pointer-events: none;
+            transform: rotateY(15deg) translateZ(10px);
+            z-index: 0;
+        }
+
+        /* Блок управления СТРОГО ПОД ИЗОБРАЖЕНИЕМ */
+        .controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 3vh;
+            z-index: 10;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
         .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
             background: transparent;
-            border: 1px solid rgba(244, 239, 233, 0.2);
-            color: #f4efe9;
-            width: 50px;
-            height: 50px;
+            border: 1px solid rgba(252, 250, 247, 0.2);
+            color: #fcfaf7;
+            width: 60px;
+            height: 45px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            z-index: 20;
+            font-size: 20px;
+            border-radius: clamp(2px, 0.5vw, 6px);
             transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
-            border-color: #f4efe9;
-            background-color: rgba(244, 239, 233, 0.05);
+            border-color: #fcfaf7;
+            background-color: rgba(252, 250, 247, 0.05);
         }
 
-        .prev-btn { left: -70px; }
-        .next-btn { right: -70px; }
+        .nav-btn:active {
+            background-color: rgba(252, 250, 247, 0.2);
+            box-shadow: 0 0 15px rgba(252, 250, 247, 0.4);
+        }
 
-        /* Оформление счетчика как в штампе АР */
         .counter {
-            margin-top: 20px;
             font-size: 16px;
-            letter-spacing: 0.1em;
-            color: #bfa89e;
+            letter-spacing: 0.15em;
+            color: #d4b2a7;
+            text-transform: uppercase;
         }
 
-        /* Адаптив для смартфонов и планшетов */
-        @media (max-width: 1200px) {
-            .prev-btn { left: 10px; }
-            .next-btn { right: 10px; }
-            .slider-container { width: 95vw; height: 66.8vw; }
+        /* Адаптивная магия под мобильные устройства */
+        @media (max-width: 768px) {
+            body {
+                justify-content: center;
+                padding: 2vh 0;
+            }
+
+            header {
+                margin-bottom: 3vh;
+                padding: 0 4vw;
+            }
+
+            .scene {
+                width: 100vw;
+                height: 130vw;
+                max-height: 70vh;
+            }
+
+            .slide {
+                border-radius: 0px;
+            }
+
+            .slide img {
+                object-fit: cover;
+            }
+
+            .nav-wrapper {
+                gap: 60px;
+            }
+            
+            .controls-container {
+                margin-top: 4vh;
+            }
         }
     </style>
 </head>
@@ -141,83 +215,106 @@
         <h1>WhiteLisa</h1>
         <p>Индивидуальный жилой дом — Визуализации АР</p>
     </header>
-
-    <div style="position: relative;">
-        <button class="nav-btn prev-btn" id="prevBtn">←</button>
-        
-        <div class="slider-container">
-            <div class="slider-wrapper" id="sliderWrapper">
-                <!-- Все слайды переведены на WebP. Первый загружается сразу, остальные — лениво -->
-                <div class="slide"><img src="04.webp" alt="Визуализация 04" loading="eager"></div>
-                <div class="slide"><img src="05.webp" alt="Визуализация 05" loading="lazy"></div>
-                <div class="slide"><img src="06.webp" alt="Визуализация 06" loading="lazy"></div>
-                <div class="slide"><img src="07.webp" alt="Визуализация 07" loading="lazy"></div>
-                <div class="slide"><img src="08.webp" alt="Визуализация 08" loading="lazy"></div>
-                <div class="slide"><img src="09.webp" alt="Визуализация 09" loading="lazy"></div>
-                <div class="slide"><img src="10.webp" alt="Визуализация 10" loading="lazy"></div>
-                <div class="slide"><img src="11.webp" alt="Визуализация 11" loading="lazy"></div>
-                <div class="slide"><img src="12.webp" alt="Визуализация 12" loading="lazy"></div>
-                <div class="slide"><img src="13.webp" alt="Визуализация 13" loading="lazy"></div>
-                <div class="slide"><img src="14.webp" alt="Визуализация 14" loading="lazy"></div>
-            </div>
+    <div class="scene">
+        <div class="book" id="book">
+            <!-- Оптимизированные WebP слайды -->
+            <div class="slide"><img src="04.webp" alt="Визуализация 04" loading="eager"></div>
+            <div class="slide"><img src="05.webp" alt="Визуализация 05" loading="lazy"></div>
+            <div class="slide"><img src="06.webp" alt="Визуализация 06" loading="lazy"></div>
+            <div class="slide"><img src="07.webp" alt="Визуализация 07" loading="lazy"></div>
+            <div class="slide"><img src="08.webp" alt="Визуализация 08" loading="lazy"></div>
+            <div class="slide"><img src="09.webp" alt="Визуализация 09" loading="lazy"></div>
+            <div class="slide"><img src="10.webp" alt="Визуализация 10" loading="lazy"></div>
+            <div class="slide"><img src="11.webp" alt="Визуализация 11" loading="lazy"></div>
+            <div class="slide"><img src="12.webp" alt="Визуализация 12" loading="lazy"></div>
+            <div class="slide"><img src="13.webp" alt="Визуализация 13" loading="lazy"></div>
+            <div class="slide"><img src="14.webp" alt="Визуализация 14" loading="lazy"></div>
         </div>
-
-        <button class="nav-btn next-btn" id="nextBtn">→</button>
     </div>
 
-    <div class="counter" id="counter">Лист: 1 / 11</div>
+    <!-- Блок управления под сценой -->
+    <div class="controls-container">
+        <div class="nav-wrapper">
+            <button class="nav-btn" id="prevBtn">←</button>
+            <div class="counter" id="counter">Лист: 1 / 11</div>
+            <button class="nav-btn" id="nextBtn">→</button>
+        </div>
+    </div>
 
     <script>
-        const wrapper = document.getElementById('sliderWrapper');
-        const images = wrapper.querySelectorAll('img');
+        const slides = document.querySelectorAll('.slide');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const counter = document.getElementById('counter');
 
         let currentIndex = 0;
-        const totalSlides = images.length;
+        const totalSlides = slides.length;
 
-        // Сохраняем оригинальные пути к WebP файлам для кэширования
-        const imageSources = Array.from(images).map(img => img.src);
+        const imageSources = Array.from(slides).map(slide => slide.querySelector('img').src);
 
-        function preloadNextImages(index) {
-            // Незаметно подгружаем в кэш браузера следующий и последующий слайды
+        function preloadImages(index) {
             const nextIdx = (index + 1) % totalSlides;
             const afterNextIdx = (index + 2) % totalSlides;
             
             [nextIdx, afterNextIdx].forEach(idx => {
-                if (images[idx].getAttribute('loading') === 'lazy') {
-                    images[idx].src = imageSources[idx];
-                    images[idx].removeAttribute('loading'); // Убираем ленивый атрибут, так как файл уже качается
+                const img = slides[idx].querySelector('img');
+                if (img.getAttribute('loading') === 'lazy') {
+                    img.src = imageSources[idx];
+                    img.removeAttribute('loading');
                 }
             });
         }
 
-        function updateSlider() {
-            wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+        function updateBook() {
+            slides.forEach((slide, idx) => {
+                slide.classList.remove('active', 'passed', 'upcoming');
+                
+                if (idx === currentIndex) {
+                    slide.classList.add('active');
+                } else if (idx < currentIndex) {
+                    slide.classList.add('passed');
+                } else {
+                    slide.classList.add('upcoming');
+                }
+            });
+
             counter.innerText = `Лист: ${currentIndex + 1} / ${totalSlides}`;
-            preloadNextImages(currentIndex);
+            preloadImages(currentIndex);
         }
 
         nextBtn.addEventListener('click', () => {
             currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
-            updateSlider();
+            updateBook();
         });
 
         prevBtn.addEventListener('click', () => {
             currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
-            updateSlider();
+            updateBook();
         });
 
-        // Навигация с клавиатуры стрелками «Влево / Вправо»
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === 'ArrowRight' || e.key === 'Space') nextBtn.click();
             if (e.key === 'ArrowLeft') prevBtn.click();
         });
 
-        // Как только документ готов, сразу кэшируем первые скрытые слайды
+        // Свайпы для мобильных устройств
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        const scene = document.querySelector('.scene');
+        scene.addEventListener('touchstart', e => { touchStartX = e.changedTouches.screenX; });
+        scene.addEventListener('touchend', e => { 
+            touchEndX = e.changedTouches.screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchStartX - touchEndX > 50) nextBtn.click();
+            if (touchEndX - touchStartX > 50) prevBtn.click();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            preloadNextImages(0);
+            updateBook();
         });
     </script>
 </body>
