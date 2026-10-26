@@ -33,11 +33,12 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* Величественная минималистичная шапка */
+        /* Шапка */
         header {
             text-align: center;
             margin-bottom: 2vh;
             z-index: 10;
+            transition: opacity 0.4s ease;
         }
 
         header h1 {
@@ -46,7 +47,6 @@
             letter-spacing: 0.28em;
             text-transform: uppercase;
             margin: 0 0 6px 0;
-            color: #fcfaf7;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
@@ -58,7 +58,7 @@
             text-transform: uppercase;
         }
 
-        /* Увеличенная сцена галереи (Максимальный фокус на картинку) */
+        /* Контейнер сцены галереи */
         .scene {
             position: relative;
             width: 90vw;
@@ -70,6 +70,19 @@
             border-radius: clamp(8px, 1.8vw, 24px);
             box-shadow: 0 35px 80px rgba(0, 0, 0, 0.8);
             overflow: hidden;
+            z-index: 20;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* МАГИЯ ПОЛНОГО ЭКРАНА (Активируется через JS) */
+        .scene.fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border-radius: 0px !important;
+            box-shadow: none !important;
+            background-color: #0b0303; /* Глубокое бархатное затемнение краев */
         }
 
         .book {
@@ -77,100 +90,95 @@
             position: relative;
         }
 
-        /* Чистая Fade-in/Fade-out анимация без застреваний */
         .slide {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            background-color: #1e0f0f;
+            background-color: transparent;
             opacity: 0; visibility: hidden; z-index: 1;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
             will-change: opacity, visibility;
-            overflow: hidden; /* Скрывает выходящие за рамки детали при зуме */
         }
 
         .slide.active {
             opacity: 1; visibility: visible; z-index: 2;
         }
 
-        /* Контейнер изображения с поддержкой интерактивного зума */
         .img-container {
             width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform;
             cursor: zoom-in;
-        }
-
-        .img-container.zoomed {
-            transform: scale(1.6); /* Масштаб приближения деталей интерьера */
-            cursor: zoom-out;
         }
 
         .slide img {
             width: 100%; height: 100%;
-            object-fit: contain; display: block; pointer-events: none;
+            object-fit: contain; /* Картинка всегда вписывается целиком без искажений */
+            display: block; pointer-events: none;
+            transition: transform 0.4s ease;
         }
 
-        /* Скрытые невидимые зоны клика по краям изображения */
+        /* Скрытые зоны навигации (Назад / Вперед) */
         .nav-zone {
             position: absolute;
-            top: 0; width: 25%; height: 100%;
-            z-index: 10; cursor: pointer;
-            transition: background 0.3s ease;
+            top: 0; width: 20%; height: 100%;
+            z-index: 30; cursor: pointer;
         }
         .nav-zone-left { left: 0; }
         .nav-zone-right { right: 0; }
         
-        /* Деликатный индикатор зоны клика при наведении на ПК */
         @media (hover: hover) {
-            .nav-zone-left:hover { background: linear-gradient(to right, rgba(252,250,247,0.02) 0%, rgba(0,0,0,0) 100%); }
-            .nav-zone-right:hover { background: linear-gradient(to left, rgba(252,250,247,0.02) 0%, rgba(0,0,0,0) 100%); }
+            .nav-zone-left:hover { background: linear-gradient(to right, rgba(252,250,247,0.015) 0%, rgba(0,0,0,0) 100%); }
+            .nav-zone-right:hover { background: linear-gradient(to left, rgba(252,250,247,0.015) 0%, rgba(0,0,0,0) 100%); }
         }
 
-        /* Блок современных затухающих точек пагинации */
+        /* Современные затухающие точки пагинации */
         .dots-container {
             display: flex; align-items: center; justify-content: center;
             gap: 10px; margin-top: 3vh; height: 20px; z-index: 10;
+            transition: opacity 0.4s ease;
         }
 
         .dot {
             width: 6px; height: 6px;
             background-color: #fcfaf7;
             border-radius: 50%;
-            opacity: 0.15;
+            opacity: 0.12;
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* Эффект затухания: текущая точка яркая и длинная, соседние чуть тусклее */
-        .dot.active { opacity: 0.9; width: 18px; border-radius: 4px; background-color: #fcfaf7; }
-        .dot.sibling-1 { opacity: 0.45; } /* Ближайшие точки */
-        .dot.sibling-2 { opacity: 0.25; } /* Точки через одну */
+        .dot.active { opacity: 0.85; width: 18px; border-radius: 4px; }
+        .dot.sibling-1 { opacity: 0.4; }
+        .dot.sibling-2 { opacity: 0.2; }
 
-        /* Адаптация под вертикальные экраны смартфонов */
+        /* Скрытие элементов интерфейса в режиме во весь экран */
+        body.hide-ui header, body.hide-ui .dots-container {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
         @media (max-width: 768px) {
             body { padding: 2vh 0; }
             header { margin-bottom: 3vh; padding: 0 6vw; }
             .scene { width: 100vw; height: 130vw; max-height: 70vh; border-radius: 0px; }
             .slide img { object-fit: cover; }
-            .nav-zone { width: 35%; } /* Увеличиваем зоны тапа для пальцев на мобильных */
-            .img-container.zoomed { transform: scale(2.0); } /* На смартфонах зум чуть сильнее */
+            .scene.fullscreen .slide img { object-fit: contain; } /* На мобильных при зуме сохраняем пропорции листа */
+            .nav-zone { width: 30%; }
         }
     </style>
 </head>
 <body>
 
-    <header>
+    <header id="siteHeader">
         <h1>WhiteLisa</h1>
         <p>Индивидуальный жилой дом — Визуализации АР</p>
     </header>
     <div class="scene" id="scene">
-        <!-- Невидимые сенсорные зоны клика поверх кадра -->
+        <!-- Зоны переключения страниц по бокам -->
         <div class="nav-zone nav-zone-left" id="zoneLeft"></div>
         <div class="nav-zone nav-zone-right" id="zoneRight"></div>
 
         <div class="book">
-            <!-- Слайды со встроенным контейнером масштабирования -->
+            <!-- Контейнеры изображений -->
             <div class="slide"><div class="img-container"><img src="04.webp" alt="04"></div></div>
             <div class="slide"><div class="img-container"><img src="05.webp" alt="05" loading="lazy"></div></div>
             <div class="slide"><div class="img-container"><img src="06.webp" alt="06" loading="lazy"></div></div>
@@ -181,11 +189,10 @@
             <div class="slide"><div class="img-container"><img src="11.webp" alt="11" loading="lazy"></div></div>
             <div class="slide"><div class="img-container"><img src="12.webp" alt="12" loading="lazy"></div></div>
             <div class="slide"><div class="img-container"><img src="13.webp" alt="13" loading="lazy"></div></div>
-            <div class="slide"><img src="14.webp" alt="14" loading="lazy"></div>
+            <div class="slide"><div class="img-container"><img src="14.webp" alt="14" loading="lazy"></div></div>
         </div>
     </div>
 
-    <!-- Контейнер для трендовых точек индикации -->
     <div class="dots-container" id="dotsContainer"></div>
 
     <script>
@@ -197,12 +204,9 @@
 
         let currentIndex = 0;
         const totalSlides = slides.length;
-        const imageSources = Array.from(slides).map(slide => {
-            const img = slide.querySelector('img');
-            return img ? img.src : '';
-        });
+        const imageSources = Array.from(slides).map(slide => slide.querySelector('img').src);
 
-        // Динамическое создание точек под количество листов
+        // Генерация точек пагинации
         slides.forEach(() => {
             const dot = document.createElement('div');
             dot.classList.add('dot');
@@ -222,80 +226,75 @@
             });
         }
 
-        // Алгоритм распределения классов затухания для точек пагинации
         function updateDots() {
             dots.forEach((dot, idx) => {
-                dot.className = 'dot'; // сброс классов
+                dot.className = 'dot';
                 const distance = Math.abs(idx - currentIndex);
-
-                if (idx === currentIndex) {
-                    dot.classList.add('active');
-                } else if (distance === 1) {
-                    dot.classList.add('sibling-1'); // Соседние точки (чуть видны)
-                } else if (distance === 2) {
-                    dot.classList.add('sibling-2'); // Дальние точки (едва заметны)
-                }
+                if (idx === currentIndex) dot.classList.add('active');
+                else if (distance === 1) dot.classList.add('sibling-1');
+                else if (distance === 2) dot.classList.add('sibling-2');
             });
         }
 
         function updateSlider() {
             slides.forEach((slide, idx) => {
-                // При переключении сбрасываем приближение (зум) на старом слайде
-                const container = slide.querySelector('.img-container');
-                if (container) container.classList.remove('zoomed');
-
-                if (idx === currentIndex) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
+                if (idx === currentIndex) slide.classList.add('active');
+                else slide.classList.remove('active');
             });
-
             updateDots();
             preloadImages(currentIndex);
         }
 
-        // Логика кликов по скрытым зонам "Назад / Вперед"
-        zoneRight.addEventListener('click', () => {
+        // Переключение листов по краям кадра
+        zoneRight.addEventListener('click', (e) => {
+            e.stopPropagation();
             currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
             updateSlider();
         });
 
-        zoneLeft.addEventListener('click', () => {
+        zoneLeft.addEventListener('click', (e) => {
+            e.stopPropagation();
             currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
             updateSlider();
         });
 
-        // Управление клавиатурой стрелками
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'Space') zoneRight.click();
             if (e.key === 'ArrowLeft') zoneLeft.click();
+            if (e.key === 'Escape' && scene.classList.contains('fullscreen')) toggleLightbox();
         });
 
-        // Реализация интерактивного зума по двойному клику/тапу по картинке
+        /* ================= УМНЫЙ ДВИЖОК ПОЛНОЭКРАННОГО ПРОСМОТРА (LIGHTBOX) ================= */
+        
+        function toggleLightbox() {
+            scene.classList.toggle('fullscreen');
+            document.body.classList.toggle('hide-ui');
+            
+            // Меняем курсоры зон навигации, чтобы они не мешали полноэкранному выходу
+            if (scene.classList.contains('fullscreen')) {
+                zoneLeft.style.cursor = 'zoom-out';
+                zoneRight.style.cursor = 'zoom-out';
+            } else {
+                zoneLeft.style.cursor = 'pointer';
+                zoneRight.style.cursor = 'pointer';
+            }
+        }
+
+        // Одиночный клик по центру кадра (в контейнер картинки) открывает/закрывает весь экран
         slides.forEach(slide => {
             const container = slide.querySelector('.img-container');
             if (container) {
-                container.addEventListener('dblclick', (e) => {
-                    e.stopPropagation(); // Отменяем триггер клика зон навигации
-                    container.classList.toggle('zoomed');
-                });
-                
-                // Поддержка двойного тапа на смартфонах
-                let lastTap = 0;
-                container.addEventListener('touchend', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 300 && tapLength > 0) {
-                        container.classList.toggle('zoomed');
-                        e.preventDefault();
-                    }
-                    lastTap = currentTime;
+                container.addEventListener('click', (e) => {
+                    toggleLightbox();
                 });
             }
         });
 
-        // Инициализация галереи
+        // Клик по боковым зонам в полноэкранном режиме тоже закрывает его для удобства
+        scene.addEventListener('click', () => {
+            if (scene.classList.contains('fullscreen')) toggleLightbox();
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             updateSlider();
         });
