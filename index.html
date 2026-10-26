@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WhiteLisa — Визуализации АР</title>
     <style>
-        /* Роскошная палитра Deep Bordeaux, Burgundy & Warm Silk */
+        /* Роскошная глубокая палитра Deep Burgundy, Bordeaux & Warm Silk */
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at center, #2d1413 0%, #1a0808 100%);
+            background: radial-gradient(circle at center, #230d0c 0%, #110404 100%);
             color: #fcfaf7;
             font-family: 'Times New Roman', Times, serif;
             display: flex;
@@ -19,10 +19,12 @@
             min-height: 100vh;
             box-sizing: border-box;
             padding: 4vh 2vw;
-            overflow-x: hidden;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* Текстурный оверлей — эффект дорогой хлопковой бумаги */
+        /* Текстурный оверлей — деликатный эффект хлопкового скетчбука */
         body::before {
             content: "";
             position: fixed;
@@ -33,7 +35,7 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* Шапка проекта с крупным шрифтом */
+        /* Величественная шапка */
         header {
             text-align: center;
             margin-bottom: 2vh;
@@ -41,32 +43,33 @@
         }
 
         header h1 {
-            font-size: clamp(32px, 5vw, 56px);
+            font-size: clamp(34px, 5.5vw, 62px);
             font-weight: 300;
-            letter-spacing: 0.25em;
+            letter-spacing: 0.28em;
             text-transform: uppercase;
-            margin: 0 0 10px 0;
+            margin: 0 0 8px 0;
             color: #fcfaf7;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         header p {
-            font-size: clamp(12px, 1.5vw, 16px);
-            letter-spacing: 0.1em;
-            color: #d4b2a7;
+            font-size: clamp(11px, 1.3vw, 15px);
+            letter-spacing: 0.15em;
+            color: #cc9f93;
             margin: 0;
             text-transform: uppercase;
         }
 
-        /* Основная трехмерная сцена для перелистывания */
+        /* Трехмерная сцена с глубокой перспективой */
         .scene {
             position: relative;
             width: 85vw;
             max-width: 1100px;
             height: 56.25vw;
             max-height: 618px;
-            perspective: 2000px;
+            perspective: 2500px; /* Усиленная глубина для изысканной пластики листа */
             margin: auto 0;
+            touch-action: none; /* Отключаем стандартный скролл браузера при перетаскивании */
         }
 
         .book {
@@ -76,7 +79,7 @@
             transform-style: preserve-3d;
         }
 
-        /* Слайд как отдельная страница */
+        /* Премиальная страница с эффектом изгиба и мягкими тенями */
         .slide {
             position: absolute;
             width: 100%;
@@ -85,15 +88,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #231212;
-            border-radius: clamp(4px, 1.2vw, 16px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            background-color: #1e0f0f;
+            border-radius: clamp(6px, 1.5vw, 20px);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.4), 0 30px 70px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             opacity: 0;
-            pointer-events: none;
             transform-origin: left center;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
-            will-change: transform, opacity;
+            /* Плавное затухание и возвращение, если жест прерван */
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease, box-shadow 0.6s ease;
+            will-change: transform, opacity, box-shadow;
         }
 
         .slide img {
@@ -101,31 +104,43 @@
             height: 100%;
             object-fit: contain;
             display: block;
+            pointer-events: none;
         }
 
-        /* Классы состояний для 3D анимации */
+        /* Сложные нишевые 3D-состояния страниц */
         .slide.active {
             opacity: 1;
-            pointer-events: auto;
-            transform: rotateY(0deg);
-            z-index: 2;
+            z-index: 3;
+            transform: rotateY(0deg) translateZ(0px);
         }
 
+        /* Прошедший лист плавно уходит влево с легким изгибом к зрителю */
         .slide.passed {
             opacity: 0;
-            pointer-events: none;
-            transform: rotateY(-180deg);
+            transform: rotateY(-180deg) scale(0.95);
             z-index: 1;
         }
 
+        /* Ожидающий лист слегка развернут в глубине сцены, создавая многослойность */
         .slide.upcoming {
-            opacity: 0;
-            pointer-events: none;
-            transform: rotateY(15deg) translateZ(10px);
-            z-index: 0;
+            opacity: 0.15;
+            transform: rotateY(8deg) translateZ(-40px) translateX(20px);
+            z-index: 2;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Блок управления СТРОГО ПОД ИЗОБРАЖЕНИЕМ */
+        /* Внутренняя тень страницы, которая становится темнее при изгибе листа */
+        .page-shadow {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            z-index: 4;
+        }
+
+        /* Блок управления под изображением */
         .controls-container {
             display: flex;
             flex-direction: column;
@@ -138,101 +153,95 @@
         .nav-wrapper {
             display: flex;
             align-items: center;
-            gap: 40px;
+            gap: 45px;
         }
 
         .nav-btn {
             background: transparent;
-            border: 1px solid rgba(252, 250, 247, 0.2);
+            border: 1px solid rgba(252, 250, 247, 0.15);
             color: #fcfaf7;
-            width: 60px;
+            width: 65px;
             height: 45px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            border-radius: clamp(2px, 0.5vw, 6px);
+            font-size: 18px;
+            border-radius: clamp(3px, 0.6vw, 8px);
             transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
             border-color: #fcfaf7;
-            background-color: rgba(252, 250, 247, 0.05);
+            background-color: rgba(252, 250, 247, 0.04);
         }
 
         .nav-btn:active {
-            background-color: rgba(252, 250, 247, 0.2);
-            box-shadow: 0 0 15px rgba(252, 250, 247, 0.4);
+            background-color: rgba(252, 250, 247, 0.15);
+            box-shadow: 0 0 20px rgba(252, 250, 247, 0.3);
         }
 
         .counter {
-            font-size: 16px;
-            letter-spacing: 0.15em;
-            color: #d4b2a7;
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            color: #cc9f93;
             text-transform: uppercase;
         }
 
-        /* Адаптивная магия под мобильные устройства */
+        /* Безупречная адаптивность под вертикальные смартфоны */
         @media (max-width: 768px) {
             body {
                 justify-content: center;
-                padding: 2vh 0;
+                padding: 3vh 0;
             }
 
             header {
-                margin-bottom: 3vh;
-                padding: 0 4vw;
+                margin-bottom: 4vh;
+                padding: 0 6vw;
             }
 
             .scene {
                 width: 100vw;
-                height: 130vw;
-                max-height: 70vh;
+                height: 125vw;
+                max-height: 65vh;
             }
 
             .slide {
-                border-radius: 0px;
+                border-radius: 0px; /* Края вплотную к экрану для иммерсивности */
             }
 
             .slide img {
-                object-fit: cover;
+                object-fit: cover; /* Наполнение экрана деталями визуализации */
             }
 
             .nav-wrapper {
-                gap: 60px;
+                gap: 55px;
             }
             
             .controls-container {
-                margin-top: 4vh;
+                margin-top: 5vh;
             }
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>WhiteLisa</h1>
-        <p>Индивидуальный жилой дом — Визуализации АР</p>
-    </header>
-    <div class="scene">
+    <div class="scene" id="scene">
         <div class="book" id="book">
-            <!-- Оптимизированные WebP слайды -->
-            <div class="slide"><img src="04.webp" alt="Визуализация 04" loading="eager"></div>
-            <div class="slide"><img src="05.webp" alt="Визуализация 05" loading="lazy"></div>
-            <div class="slide"><img src="06.webp" alt="Визуализация 06" loading="lazy"></div>
-            <div class="slide"><img src="07.webp" alt="Визуализация 07" loading="lazy"></div>
-            <div class="slide"><img src="08.webp" alt="Визуализация 08" loading="lazy"></div>
-            <div class="slide"><img src="09.webp" alt="Визуализация 09" loading="lazy"></div>
-            <div class="slide"><img src="10.webp" alt="Визуализация 10" loading="lazy"></div>
-            <div class="slide"><img src="11.webp" alt="Визуализация 11" loading="lazy"></div>
-            <div class="slide"><img src="12.webp" alt="Визуализация 12" loading="lazy"></div>
-            <div class="slide"><img src="13.webp" alt="Визуализация 13" loading="lazy"></div>
-            <div class="slide"><img src="14.webp" alt="Визуализация 14" loading="lazy"></div>
+            <!-- Высококачественные WebP слайды со слоем теней -->
+            <div class="slide"><img src="04.webp" alt="04" loading="eager"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="05.webp" alt="05" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="06.webp" alt="06" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="07.webp" alt="07" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="08.webp" alt="08" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="09.webp" alt="09" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="10.webp" alt="10" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="11.webp" alt="11" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="12.webp" alt="12" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="13.webp" alt="13" loading="lazy"><div class="page-shadow"></div></div>
+            <div class="slide"><img src="14.webp" alt="14" loading="lazy"><div class="page-shadow"></div></div>
         </div>
     </div>
 
-    <!-- Блок управления под сценой -->
     <div class="controls-container">
         <div class="nav-wrapper">
             <button class="nav-btn" id="prevBtn">←</button>
@@ -242,6 +251,7 @@
     </div>
 
     <script>
+        const scene = document.getElementById('scene');
         const slides = document.querySelectorAll('.slide');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -249,13 +259,17 @@
 
         let currentIndex = 0;
         const totalSlides = slides.length;
-
         const imageSources = Array.from(slides).map(slide => slide.querySelector('img').src);
+
+        // Переменные для продвинутого тач-трекинга движения пальца
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let progress = 0;
 
         function preloadImages(index) {
             const nextIdx = (index + 1) % totalSlides;
             const afterNextIdx = (index + 2) % totalSlides;
-            
             [nextIdx, afterNextIdx].forEach(idx => {
                 const img = slides[idx].querySelector('img');
                 if (img.getAttribute('loading') === 'lazy') {
@@ -265,10 +279,14 @@
             });
         }
 
-        function updateBook() {
+        function updateBookState() {
             slides.forEach((slide, idx) => {
+                slide.style.transition = 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, box-shadow 0.7s ease';
+                const shadow = slide.querySelector('.page-shadow');
+                if (shadow) shadow.style.opacity = 0;
+
                 slide.classList.remove('active', 'passed', 'upcoming');
-                
+
                 if (idx === currentIndex) {
                     slide.classList.add('active');
                 } else if (idx < currentIndex) {
@@ -282,40 +300,101 @@
             preloadImages(currentIndex);
         }
 
+        // Кнопки навигации
         nextBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
-            updateBook();
+            if (currentIndex < totalSlides - 1) currentIndex++;
+            else currentIndex = 0;
+            updateBookState();
         });
 
         prevBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
-            updateBook();
+            if (currentIndex > 0) currentIndex--;
+            else currentIndex = totalSlides - 1;
+            updateBookState();
         });
 
+        // Клавиатура
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'Space') nextBtn.click();
             if (e.key === 'ArrowLeft') prevBtn.click();
         });
 
-        // Свайпы для мобильных устройств
-        let touchStartX = 0;
-        let touchEndX = 0;
+        /* ================= ДВИЖОК СЕНСОРНОГО ТРЕКИНГА (TOUCH DRAG) ================= */
         
-        const scene = document.querySelector('.scene');
-        scene.addEventListener('touchstart', e => { touchStartX = e.changedTouches.screenX; });
-        scene.addEventListener('touchend', e => { 
-            touchEndX = e.changedTouches.screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            if (touchStartX - touchEndX > 50) nextBtn.click();
-            if (touchEndX - touchStartX > 50) prevBtn.click();
+        function dragStart(x) {
+            isDragging = true;
+            startX = x;
+            currentX = x;
+            
+            // В момент касания убираем плавные транзиции для мгновенного отклика на палец
+            const activeSlide = slides[currentIndex];
+            if (activeSlide) activeSlide.style.transition = 'none';
+            
+            const nextSlide = slides[currentIndex + 1];
+            if (nextSlide) nextSlide.style.transition = 'none';
         }
 
+        function dragMove(x) {
+            if (!isDragging) return;
+            currentX = x;
+            const deltaX = startX - currentX;
+            const sceneWidth = scene.clientWidth;
+            
+            // Вычисляем процент перелистывания от ширины экрана (от 0 до 1)
+            progress = Math.min(Math.max(deltaX / sceneWidth, -0.2), 1);
+
+            const activeSlide = slides[currentIndex];
+            const shadow = activeSlide ? activeSlide.querySelector('.page-shadow') : null;
+
+            if (progress > 0 && currentIndex < totalSlides - 1) {
+                // Движение пальца влево (листаем вперед): текущий лист плавно сгибается в 3D
+                let angle = progress * -180;
+                // Нишевая симуляция легкого подъема и изгиба листа к камере (Z-ось)
+                let translateZ = Math.sin(progress * Math.PI) * 80; 
+                activeSlide.style.transform = `rotateY(${angle}deg) translateZ(${translateZ}px)`;
+                
+                if (shadow) shadow.style.opacity = progress * 0.7;
+
+                // Слегка приоткрываем следующий лист из глубины
+                const nextSlide = slides[currentIndex + 1];
+                if (nextSlide) {
+                    nextSlide.style.opacity = 0.15 + (progress * 0.85);
+                    nextSlide.style.transform = `rotateY(${8 - (progress * 8)}deg) translateZ(${-40 + (progress * 40)}px) translateX(${20 - (progress * 20)}px)`;
+                }
+            }
+        }
+
+        function dragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            // Порог перелистывания — 20% от ширины экрана
+            if (progress > 0.2 && currentIndex < totalSlides - 1) {
+                currentIndex++;
+            }
+            updateBookState();
+            progress = 0;
+        }
+
+        // Регистрация Touch-событий для смартфонов и планшетов
+        scene.addEventListener('touchstart', e => dragStart(e.touches[0].clientX), { passive: true });
+        scene.addEventListener('touchmove', e => dragMove(e.touches[0].clientX), { passive: true });
+        scene.addEventListener('touchend', dragEnd);
+
+        // Регистрация Mouse-событий для ПК (перелистывание зажатой мышкой)
+        scene.addEventListener('mousedown', e => dragStart(e.clientX));
+        window.addEventListener('mousemove', e => { if (isDragging) dragMove(e.clientX); });
+        window.addEventListener('mouseup', dragEnd);
+
+        // Запуск
         window.addEventListener('DOMContentLoaded', () => {
-            updateBook();
+            updateBookState();
         });
     </script>
 </body>
 </html>
+
+    <header>
+        <h1>WhiteLisa</h1>
+        <p>Индивидуальный жилой дом — Визуализации АР</p>
+    </header>
