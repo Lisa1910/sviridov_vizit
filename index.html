@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteLisa — Визуализации АР</title>
+    <style>
+        /* Базовые стили интерьерной палитры (Dark Espresso, Chocolate & Burgundy) */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1110; /* Глубокий кофейно-шоколадный тон фона */
+            color: #f4efe9; /* Молочно-белый благородный цвет текста */
+            font-family: 'Times New Roman', Times, serif; /* Тонкий классический шрифт */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Текстурный оверлей — эффект шума хлопковой бумаги поверх всего сайта */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Шапка проекта */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin: 0 0 5px 0;
+        }
+
+        header p {
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            color: #bfa89e; /* Приглушенный карамельный тон */
+            margin: 0;
+        }
+
+        /* Главный контейнер для слайдера */
+        .slider-container {
+            position: relative;
+            width: 80vw;
+            max-width: 1000px;
+            height: 56.25vw; /* Пропорция 16:9 */
+            max-height: 562px;
+            background-color: #261c1b;
+            /* Тонкая рамка со сложной внутренней линией в стиле чертежей по ГОСТу */
+            border: 1px solid #3d2d2b;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        /* Обертка для слайдов */
+        .slider-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Плавный, дорогой переход */
+        }
+
+        /* Элемент слайда */
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            box-sizing: border-box;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Стрелки навигации — прозрачные с тонкой 1px рамкой, светятся при ховере */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid rgba(244, 239, 233, 0.2);
+            color: #f4efe9;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            border-color: #f4efe9;
+            background-color: rgba(244, 239, 233, 0.05);
+            box-shadow: 0 0 10px rgba(244, 239, 233, 0.2);
+        }
+
+        .prev-btn { left: -70px; }
+        .next-btn { right: -70px; }
+
+        /* Индикатор страниц (Пагинация внизу) */
+        .counter {
+            margin-top: 20px;
+            font-size: 16px;
+            letter-spacing: 0.1em;
+            color: #bfa89e;
+        }
+
+        /* Адаптивность для мобильных экранов */
+        @media (max-width: 1200px) {
+            .prev-btn { left: 10px; }
+            .next-btn { right: 10px; }
+            .slider-container { width: 95vw; height: 66.8vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>WhiteLisa</h1>
+        <p>Индивидуальный жилой дом — Визуализации АР</p>
+    </header>
+
+    <div style="position: relative;">
+        <!-- Кнопки управления -->
+        <button class="nav-btn prev-btn" id="prevBtn">←</button>
+        
+        <!-- Контейнер галереи -->
+        <div class="slider-container">
+            <div class="slider-wrapper" id="sliderWrapper">
+                <!-- Слайды. Укажите здесь имена ваших PNG файлов, сохраненных в репозитории -->
+                <div class="slide" style="background-image: url('04.png');"></div>
+                <div class="slide" style="background-image: url('05.png');"></div>
+                <div class="slide" style="background-image: url('06.png');"></div>
+                <div class="slide" style="background-image: url('07.png');"></div>
+                <div class="slide" style="background-image: url('08.png');"></div>
+                <div class="slide" style="background-image: url('09.png');"></div>
+                <div class="slide" style="background-image: url('10.png');"></div>
+                <div class="slide" style="background-image: url('11.png');"></div>
+                <div class="slide" style="background-image: url('12.png');"></div>
+                <div class="slide" style="background-image: url('13.png');"></div>
+                <div class="slide" style="background-image: url('14.png');"></div>
+            </div>
+        </div>
+
+        <button class="nav-btn next-btn" id="nextBtn">→</button>
+    </div>
+
+    <!-- Номер текущего листа (как в штампе чертежа) -->
+    <div class="counter" id="counter">Лист: 1 / 11</div>
+
+    <script>
+        const wrapper = document.getElementById('sliderWrapper');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const counter = document.getElementById('counter');
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        function updateSlider() {
+            // Сдвиг слайдера с плавным перелистыванием
+            wrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // Обновление номера страницы
+            counter.innerText = `Лист: ${currentIndex + 1} / ${totalSlides}`;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < totalSlides - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Зацикливание в начало
+            }
+            updateSlider();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = totalSlides - 1; // Зацикливание в конец
+            }
+            updateSlider();
+        });
+
+        // Поддержка управления стрелками клавиатуры
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === 'ArrowLeft') prevBtn.click();
+        });
+    </script>
+</body>
+</html>
