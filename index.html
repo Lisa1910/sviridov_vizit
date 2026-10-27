@@ -6,25 +6,25 @@
     <title>WhiteLisa — Визуализации АР</title>
     <style>
         /* Премиальная бургундская палитра Deep Burgundy & Silk */
+        html {
+            scroll-behavior: smooth;
+        }
+        
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at center, #2d1413 0%, #1a0808 100%);
+            background: #1a0808; /* Благородный темный бургунди в базе */
             color: #fcfaf7;
             font-family: 'Times New Roman', Times, serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            min-height: 100vh;
-            box-sizing: border-box;
-            padding: 3vh 0;
-            overflow: hidden;
+            overflow-x: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        /* Текстура хлопковой бумаги */
+        /* Текстура дорогой хлопковой бумаги поверх всей прокрутки */
         body::before {
             content: "";
             position: fixed;
@@ -33,271 +33,239 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://w3.org id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* Шапка */
+        /* Крупная величественная шапка в начале страницы */
         header {
             text-align: center;
-            margin-bottom: 2vh;
+            padding: 8vh 2vw 4vh 2vw;
             z-index: 10;
-            transition: opacity 0.4s ease;
+            background: linear-gradient(to bottom, #2d1413 0%, #1a0808 100%);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         header h1 {
-            font-size: clamp(34px, 5vw, 56px);
+            font-size: clamp(38px, 6vw, 68px);
             font-weight: 300;
             letter-spacing: 0.28em;
             text-transform: uppercase;
-            margin: 0 0 6px 0;
+            margin: 0 0 12px 0;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         header p {
-            font-size: clamp(10px, 1.2vw, 14px);
+            font-size: clamp(11px, 1.4vw, 16px);
             letter-spacing: 0.15em;
             color: #cc9f93;
             margin: 0;
             text-transform: uppercase;
         }
 
-        /* Контейнер сцены галереи */
-        .scene {
+        /* Полноэкранный Scroll-контейнер */
+        .gallery-container {
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1a0808;
+        }
+
+        /* Каждая секция занимает ровно всю ширину экрана и вписана по высоте */
+        .project-page {
             position: relative;
-            width: 90vw;
-            max-width: 1200px;
-            height: 56.25vw;
-            max-height: 675px;
-            margin: auto 0;
-            background-color: #1e0f0f;
-            border-radius: clamp(8px, 1.8vw, 24px);
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.8);
-            overflow: hidden;
-            z-index: 20;
-            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            background-color: #110404; /* Усиленное глубокое затемнение под кадром */
+            border-bottom: 1px solid #2d1413;
         }
 
-        /* МАГИЯ ПОЛНОГО ЭКРАНА (Активируется через JS) */
-        .scene.fullscreen {
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            border-radius: 0px !important;
-            box-shadow: none !important;
-            background-color: #0b0303; /* Глубокое бархатное затемнение краев */
+        .project-page img {
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain; /* Сохраняет пропорции чертежей 16:9 без искажений */
+            display: block;
         }
 
-        .book {
-            width: 100%; height: 100%;
-            position: relative;
-        }
-
-        .slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            background-color: transparent;
-            opacity: 0; visibility: hidden; z-index: 1;
-            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
-            will-change: opacity, visibility;
-        }
-
-        .slide.active {
-            opacity: 1; visibility: visible; z-index: 2;
-        }
-
-        .img-container {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: zoom-in;
-        }
-
-        .slide img {
-            width: 100%; height: 100%;
-            object-fit: contain; /* Картинка всегда вписывается целиком без искажений */
-            display: block; pointer-events: none;
-            transition: transform 0.4s ease;
-        }
-
-        /* Скрытые зоны навигации (Назад / Вперед) */
-        .nav-zone {
-            position: absolute;
-            top: 0; width: 20%; height: 100%;
-            z-index: 30; cursor: pointer;
-        }
-        .nav-zone-left { left: 0; }
-        .nav-zone-right { right: 0; }
-        
-        @media (hover: hover) {
-            .nav-zone-left:hover { background: linear-gradient(to right, rgba(252,250,247,0.015) 0%, rgba(0,0,0,0) 100%); }
-            .nav-zone-right:hover { background: linear-gradient(to left, rgba(252,250,247,0.015) 0%, rgba(0,0,0,0) 100%); }
-        }
-
-        /* Современные затухающие точки пагинации */
-        .dots-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 10px; margin-top: 3vh; height: 20px; z-index: 10;
-            transition: opacity 0.4s ease;
+        /* Фиксированные сбоку современные затухающие точки */
+        .dots-nav {
+            position: fixed;
+            right: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+            mix-blend-mode: difference; /* Точки автоматически видны на любом фоне */
         }
 
         .dot {
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             background-color: #fcfaf7;
             border-radius: 50%;
-            opacity: 0.12;
+            opacity: 0.15;
+            cursor: pointer;
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .dot.active { opacity: 0.85; width: 18px; border-radius: 4px; }
-        .dot.sibling-1 { opacity: 0.4; }
-        .dot.sibling-2 { opacity: 0.2; }
-
-        /* Скрытие элементов интерфейса в режиме во весь экран */
-        body.hide-ui header, body.hide-ui .dots-container {
-            opacity: 0 !important;
-            pointer-events: none;
+        /* Современный эффект затухания точек при скролле */
+        .dot.active {
+            opacity: 0.9;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .dot:hover {
+            opacity: 0.6;
         }
 
+        /* Футер с премиальной кнопкой скачивания PDF */
+        footer {
+            width: 100%;
+            padding: 10vh 2vw;
+            background: linear-gradient(to top, #2d1413 0%, #1a0808 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        /* Трендовая прозрачная кнопка с 1px рамкой и свечением */
+        .download-btn {
+            background: transparent;
+            border: 1px solid rgba(252, 250, 247, 0.2);
+            color: #fcfaf7;
+            padding: 18px 36px;
+            font-size: 14px;
+            font-family: 'Times New Roman', Times, serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn:hover {
+            border-color: #fcfaf7;
+            background-color: rgba(252, 250, 247, 0.05);
+            box-shadow: 0 0 25px rgba(252, 250, 247, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: translateY(1px);
+            background-color: rgba(252, 250, 247, 0.15);
+        }
+
+        /* Идеальная адаптивность под мобильные телефоны */
         @media (max-width: 768px) {
-            body { padding: 2vh 0; }
-            header { margin-bottom: 3vh; padding: 0 6vw; }
-            .scene { width: 100vw; height: 130vw; max-height: 70vh; border-radius: 0px; }
-            .slide img { object-fit: cover; }
-            .scene.fullscreen .slide img { object-fit: contain; } /* На мобильных при зуме сохраняем пропорции листа */
-            .nav-zone { width: 30%; }
+            header { padding: 6vh 4vw 3vh 4vw; }
+            .project-page { height: calc(100vh - 60px); }
+            .project-page img { object-fit: cover; } /* На смартфонах разворачиваем во всю ширину без полей */
+            .dots-nav { right: 4vw; }
+            .download-btn { width: 85%; text-align: center; padding: 16px 20px; font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
-    <header id="siteHeader">
+    <header>
         <h1>WhiteLisa</h1>
         <p>Индивидуальный жилой дом — Визуализации АР</p>
     </header>
-    <div class="scene" id="scene">
-        <!-- Зоны переключения страниц по бокам -->
-        <div class="nav-zone nav-zone-left" id="zoneLeft"></div>
-        <div class="nav-zone nav-zone-right" id="zoneRight"></div>
 
-        <div class="book">
-            <!-- Контейнеры изображений -->
-            <div class="slide"><div class="img-container"><img src="04.webp" alt="04"></div></div>
-            <div class="slide"><div class="img-container"><img src="05.webp" alt="05" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="06.webp" alt="06" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="07.webp" alt="07" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="08.webp" alt="08" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="09.webp" alt="09" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="10.webp" alt="10" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="11.webp" alt="11" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="12.webp" alt="12" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="13.webp" alt="13" loading="lazy"></div></div>
-            <div class="slide"><div class="img-container"><img src="14.webp" alt="14" loading="lazy"></div></div>
-        </div>
+    <!-- Боковая пагинация точками (генерируется скриптом) -->
+    <div class="dots-nav" id="dotsNav"></div>
+    <div class="gallery-container">
+        <!-- Каждое изображение выведено отдельной полноэкранной секцией -->
+        <section class="project-page" id="page-0"><img src="04.webp" alt="Визуализация 04"></section>
+        <section class="project-page" id="page-1"><img src="05.webp" alt="Визуализация 05" loading="lazy"></section>
+        <section class="project-page" id="page-2"><img src="06.webp" alt="Визуализация 06" loading="lazy"></section>
+        <section class="project-page" id="page-3"><img src="07.webp" alt="Визуализация 07" loading="lazy"></section>
+        <section class="project-page" id="page-4"><img src="08.webp" alt="Визуализация 08" loading="lazy"></section>
+        <section class="project-page" id="page-5"><img src="09.webp" alt="Визуализация 09" loading="lazy"></section>
+        <section class="project-page" id="page-6"><img src="10.webp" alt="Визуализация 10" loading="lazy"></section>
+        <section class="project-page" id="page-7"><img src="11.webp" alt="Визуализация 11" loading="lazy"></section>
+        <section class="project-page" id="page-8"><img src="12.webp" alt="Визуализация 12" loading="lazy"></section>
+        <section class="project-page" id="page-9"><img src="13.webp" alt="Визуализация 13" loading="lazy"></section>
+        <section class="project-page" id="page-10"><img src="14.webp" alt="Визуализация 14" loading="lazy"></section>
     </div>
 
-    <div class="dots-container" id="dotsContainer"></div>
+    <footer>
+        <!-- Кнопка скачивания. Файл project.pdf должен лежать в корневом каталоге репозитория -->
+        <a href="project.pdf" download="WhiteLisa_Project_AR.pdf" class="download-btn">
+            Скачать документацию проекта (PDF)
+        </a>
+    </footer>
 
     <script>
-        const scene = document.getElementById('scene');
-        const slides = document.querySelectorAll('.slide');
-        const dotsContainer = document.getElementById('dotsContainer');
-        const zoneLeft = document.getElementById('zoneLeft');
-        const zoneRight = document.getElementById('zoneRight');
-
-        let currentIndex = 0;
-        const totalSlides = slides.length;
-        const imageSources = Array.from(slides).map(slide => slide.querySelector('img').src);
-
-        // Генерация точек пагинации
-        slides.forEach(() => {
+        const pages = document.querySelectorAll('.project-page');
+        const dotsNav = document.getElementById('dotsNav');
+        
+        // Автоматически строим точки по числу секций
+        pages.forEach((page, idx) => {
             const dot = document.createElement('div');
             dot.classList.add('dot');
-            dotsContainer.appendChild(dot);
+            if (idx === 0) dot.classList.add('active');
+            
+            // Клик по точке плавно перемещает к нужному листу
+            dot.addEventListener('click', () => {
+                page.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            dotsNav.appendChild(dot);
         });
+        
         const dots = document.querySelectorAll('.dot');
 
-        function preloadImages(index) {
-            const nextIdx = (index + 1) % totalSlides;
-            const afterNextIdx = (index + 2) % totalSlides;
+        /* Умное отслеживание скролла (Intersection Observer) */
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5 // Точка активируется, когда лист виден более чем наполовину
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const targetId = entry.target.id;
+                    const index = parseInt(targetId.split('-')[1]);
+                    
+                    // Обновляем активную точку
+                    dots.forEach((dot, idx) => {
+                        if (idx === index) {
+                            dot.classList.add('active');
+                        } else {
+                            dot.classList.remove('active');
+                        }
+                    });
+
+                    // Ленивая подгрузка соседних изображений при приближении скролла
+                    preloadAdjacentImages(index);
+                }
+            });
+        }, observerOptions);
+
+        pages.forEach(page => observer.observe(page));
+
+        // Алгоритм фонового кэширования
+        function preloadAdjacentImages(currentIndex) {
+            const total = pages.length;
+            const nextIdx = (currentIndex + 1) % total;
+            const afterNextIdx = (currentIndex + 2) % total;
+            
             [nextIdx, afterNextIdx].forEach(idx => {
-                const img = slides[idx].querySelector('img');
+                const img = pages[idx].querySelector('img');
                 if (img && img.getAttribute('loading') === 'lazy') {
-                    img.src = imageSources[idx];
                     img.removeAttribute('loading');
                 }
             });
         }
-
-        function updateDots() {
-            dots.forEach((dot, idx) => {
-                dot.className = 'dot';
-                const distance = Math.abs(idx - currentIndex);
-                if (idx === currentIndex) dot.classList.add('active');
-                else if (distance === 1) dot.classList.add('sibling-1');
-                else if (distance === 2) dot.classList.add('sibling-2');
-            });
-        }
-
-        function updateSlider() {
-            slides.forEach((slide, idx) => {
-                if (idx === currentIndex) slide.classList.add('active');
-                else slide.classList.remove('active');
-            });
-            updateDots();
-            preloadImages(currentIndex);
-        }
-
-        // Переключение листов по краям кадра
-        zoneRight.addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
-            updateSlider();
-        });
-
-        zoneLeft.addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
-            updateSlider();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'Space') zoneRight.click();
-            if (e.key === 'ArrowLeft') zoneLeft.click();
-            if (e.key === 'Escape' && scene.classList.contains('fullscreen')) toggleLightbox();
-        });
-
-        /* ================= УМНЫЙ ДВИЖОК ПОЛНОЭКРАННОГО ПРОСМОТРА (LIGHTBOX) ================= */
-        
-        function toggleLightbox() {
-            scene.classList.toggle('fullscreen');
-            document.body.classList.toggle('hide-ui');
-            
-            // Меняем курсоры зон навигации, чтобы они не мешали полноэкранному выходу
-            if (scene.classList.contains('fullscreen')) {
-                zoneLeft.style.cursor = 'zoom-out';
-                zoneRight.style.cursor = 'zoom-out';
-            } else {
-                zoneLeft.style.cursor = 'pointer';
-                zoneRight.style.cursor = 'pointer';
-            }
-        }
-
-        // Одиночный клик по центру кадра (в контейнер картинки) открывает/закрывает весь экран
-        slides.forEach(slide => {
-            const container = slide.querySelector('.img-container');
-            if (container) {
-                container.addEventListener('click', (e) => {
-                    toggleLightbox();
-                });
-            }
-        });
-
-        // Клик по боковым зонам в полноэкранном режиме тоже закрывает его для удобства
-        scene.addEventListener('click', () => {
-            if (scene.classList.contains('fullscreen')) toggleLightbox();
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            updateSlider();
-        });
     </script>
 </body>
 </html>
